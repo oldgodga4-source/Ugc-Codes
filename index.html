@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FLEX UGC CODES</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #06060F;
+  color: #F0EBFF;
+}
+
+/* TOP BAR */
+.topbar {
+  height: 56px;
+  background: #0A0520;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid #3C2876;
+}
+
+.logo {
+  font-weight: 900;
+  color: gold;
+}
+
+.btn {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* LAYOUT */
+.container {
+  display: flex;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 80px;
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.iconBtn {
+  width: 55px;
+  height: 55px;
+  background: #121230;
+  border: 1px solid #8246FF;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/* PANEL */
+.panel {
+  flex: 1;
+  padding: 20px;
+}
+
+.card {
+  background: #0C0C1F;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid #3C2876;
+  max-width: 400px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 8px;
+  border: 1px solid #3C2876;
+  background: #121230;
+  color: white;
+}
+
+.green { background: #32DC78; }
+.red { background: #FF4646; }
+
+.code {
+  padding: 5px;
+  font-size: 12px;
+  color: gold;
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOP -->
+<div class="topbar">
+  <div class="logo">⚡ FLEX UGC CODES</div>
+  <div>💰 0 Coins</div>
+</div>
+
+<div class="container">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <button class="iconBtn" onclick="openTab('create')">✏️</button>
+    <button class="iconBtn" onclick="openTab('redeem')">🎁</button>
+    <button class="iconBtn" onclick="openTab('codes')">📋</button>
+  </div>
+
+  <!-- PANEL -->
+  <div class="panel">
+
+    <!-- CREATE -->
+    <div id="create" class="tab">
+      <div class="card">
+        <h3>CREATE CODE</h3>
+
+        <input id="codeName" placeholder="Code adı">
+        <input id="itemId" placeholder="Item ID">
+        <input id="maxUses" placeholder="Max kullanım (0=∞)">
+
+        <button class="btn green" onclick="createCode()">CREATE</button>
+      </div>
+    </div>
+
+    <!-- REDEEM -->
+    <div id="redeem" class="tab" style="display:none;">
+      <div class="card">
+        <h3>REDEEM CODE</h3>
+
+        <input id="redeemInput" placeholder="Code gir">
+
+        <button class="btn green" onclick="redeem()">REDEEM</button>
+
+        <div id="codeList"></div>
+      </div>
+    </div>
+
+    <!-- CODES -->
+    <div id="codes" class="tab" style="display:none;">
+      <div class="card">
+        <h3>MY CODES</h3>
+        <div id="myCodes"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let codes = {};
+
+function openTab(tab) {
+  document.querySelectorAll(".tab").forEach(t => t.style.display = "none");
+  document.getElementById(tab).style.display = "block";
+}
+
+function createCode() {
+  let name = document.getElementById("codeName").value.toUpperCase().replace(/\s/g,"");
+  let itemId = document.getElementById("itemId").value;
+  let maxUses = Number(document.getElementById("maxUses").value) || 0;
+
+  if (!name || !itemId) {
+    alert("Boş bırakma!");
+    return;
+  }
+
+  if (codes[name]) {
+    alert("Bu code zaten var!");
+    return;
+  }
+
+  codes[name] = {
+    itemId,
+    maxUses,
+    used: 0
+  };
+
+  alert("Code oluşturuldu: " + name);
+  renderCodes();
+}
+
+function redeem() {
+  let code = document.getElementById("redeemInput").value.toUpperCase();
+
+  if (!codes[code]) {
+    alert("Geçersiz code!");
+    return;
+  }
+
+  let c = codes[code];
+
+  if (c.maxUses !== 0 && c.used >= c.maxUses) {
+    alert("Limit doldu!");
+    return;
+  }
+
+  c.used++;
+
+  alert("Kod kullanıldı! Item ID: " + c.itemId);
+
+  renderCodes();
+}
+
+function renderCodes() {
+  let html = "";
+
+  for (let k in codes) {
+    let c = codes[k];
+    html += `<div class="code">
+      🔑 ${k} | ${c.used}/${c.maxUses || "∞"} | ID:${c.itemId}
+    </div>`;
+  }
+
+  document.getElementById("myCodes").innerHTML = html;
+  document.getElementById("codeList").innerHTML = html;
+}
+</script>
+
+</body>
+</html>
